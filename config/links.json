@@ -1,39 +1,56 @@
 [
-	{
-		"title": "About",
-		"ref": "/#about"
-	},
-	{
-		"title": "Venue",
-		"ref": "",
-		"subMenu": [
-			{
-				"title": "Bengaluru, India",
-				"ref": "/venue/Bangalore"
-			},
-			{
-				"title": "London, UK",
-				"ref": "/venue/London"
-			},
-			{
-				"title": "Madrid, Spain",
-				"ref": "/venue/Madrid"
-			},
-			{
-				"title": "Paris, France",
-				"ref": "/venue/Paris"
-			}
-		]
-	},
-	{
-		"title": "Speakers",
-		"ref": "/#speakers"
-	},
-	{
-		"title": "Sponsors",
-		"ref": "/#sponsors"
-	}
+  {
+    "title": "About",
+    "ref": "/#about"
+  },
+  {
+    "title": "Venue",
+    "ref": "",
+    "subMenu": [
+      {
+        "title": "California, USA",
+        "ref": "/venue/California"
+      },
+      {
+        "title": "Amsterdam, Netherlands",
+        "ref": "/venue/Amsterdam"
+      },
+      {
+        "title": "London, UK",
+        "ref": "/venue/London"
+      },
+      {
+        "title": "Online",
+        "ref": "/venue/Online"
+      },
+      {
+        "title": "Paris, France",
+        "ref": "/venue/Paris"
+      }
+    ]
+  },
+  {
+    "title": "Meetups",
+    "ref": "/meetups"
+  },
+  {
+    "title": "Speakers",
+    "ref": "/#speakers"
+  },
+  {
+    "title": "Tickets",
+    "ref": "/#tickets"
+  },
+  {
+    "title": "Sponsors",
+    "ref": "/#sponsors"
+  },
+  {
+    "title": "Past Editions",
+    "ref": "/editions"
+  },
+  {
+    "title": "Gallery",
+    "ref": "/gallery"
+  }
 ]
-
-
-    

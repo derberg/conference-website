@@ -1,0 +1,337 @@
+'use client';
+
+import { useState } from 'react';
+import { useMediaQuery } from 'react-responsive';
+import Header from '../components/Header/header';
+import Sponsors from '../components/Sponsors/sponsors';
+import About from '../components/About/about';
+import Ticket from '../components/Ticket/Ticket';
+import Heading from '../components/Typography/heading';
+import Paragraph from '../components/Typography/paragraph';
+import Subscription from '../components/Form/subscription';
+import SpeakerCard from '../components/Cards/SpeakerCard/SpeakerCard';
+import Link from 'next/link';
+import Button from '../components/Buttons/button';
+import Dropdown from '../components/Dropdown/dropdown';
+import Gallery from '../components/Gallery/gallery';
+import { City, GalleryAlbum, Speaker as SpeakerType } from '../types/types';
+import { isExternalUrl, resolveCfpUrl } from '../utils/pretalx';
+import { cities, speakers } from '../config/conference-data';
+
+interface HomePageProps {
+  galleryCloudName: string;
+  galleryAlbums: GalleryAlbum[];
+  galleryLimit: number;
+}
+
+export default function HomePage({
+  galleryCloudName,
+  galleryAlbums,
+  galleryLimit,
+}: HomePageProps) {
+  const isTablet = useMediaQuery({ maxWidth: '1118px' });
+  const [speakersList, setSpeakersList] = useState(speakers);
+  const [currentCity, setCurrentCity] = useState<Partial<City>>({
+    name: 'All',
+  });
+
+  const handleSpeakers = (city: string) => {
+    if (city && city !== 'all') {
+      const citySpeaker = speakers.filter((speaker) =>
+        speaker.city.includes(city)
+      );
+      setSpeakersList(citySpeaker);
+    } else if (city === 'all') {
+      setSpeakersList(speakers);
+    } else {
+      setSpeakersList([]);
+    }
+  };
+  const currentCfpUrl = resolveCfpUrl(currentCity.cfp);
+
+  return (
+    <div className="relative">
+      <Header />
+      <div id="about" className="mt-20">
+        <About />
+      </div>
+      <>
+        <div id="register" className="container mt-20 lg:mt-0">
+          <div className="flex items-center flex-col justify-center">
+            <div
+              id="speakers"
+              className="relative flex flex-col items-center justify-center pt-20 lg:pt-8"
+            >
+              <div className="text-center">
+                <div className="flex items-center justify-center">
+                  <div className="text-lg sm:text-sm text-white font-semi-bold border-b-2 border-blue-400 mb-1">
+                    Speakers
+                  </div>
+                </div>
+              </div>
+              <Heading
+                typeStyle="heading-md"
+                className="text-gradient text-center lg:mt-10"
+              >
+                Meet The Speakers
+              </Heading>
+              <div className="max-w-3xl sm:w-full text-center">
+                <Paragraph
+                  typeStyle="body-lg"
+                  className="mt-6"
+                  textColor="text-gray-200"
+                >
+                  Discover the inspiring voices shaping our event, each bringing
+                  unique insights and expertise to the forefront of their
+                  respective fields.
+                </Paragraph>
+              </div>
+              <div className="lg:py-20 w-content-lg lg:w-full">
+                <div className="mt-16 lg:mt-0">
+                  {isTablet ? (
+                    <div className="w-full">
+                      <Dropdown
+                        selectedItem={currentCity as City}
+                        items={cities}
+                        onSelect={(city) => {
+                          setCurrentCity(city);
+                          handleSpeakers(city.name);
+                        }}
+                        getDisplayValue={(city) => city?.name}
+                        placeholder="Select a city"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex justify-center">
+                      <div className="space-x-4 lg:w-full flex justify-between">
+                        <Button
+                          type="button"
+                          onClick={() => {
+                            handleSpeakers('all');
+                            setCurrentCity({ name: 'All' });
+                          }}
+                          className={`w-30 ${currentCity.name === 'All'
+                            ? 'gradient-bg'
+                            : 'border border-gray btn relative  overflow-hidden  transition-all  rounded  group py-1.5 px-2.5'
+                            }`}
+                          outline={true}
+                        >
+                          <span className="transparent-bg "></span>
+                          <span className="relative w-full  rounded transition-colors duration-300 ease-in-out group-hover:text-white">
+                            All
+                          </span>
+                        </Button>
+                        {cities.map((city) => {
+                          return (
+                            <div
+                              key={city.name}
+                              onClick={() => {
+                                setCurrentCity(city);
+                                handleSpeakers(city.name);
+                              }}
+                            >
+                              <Button
+                                type="button"
+                                className={`w-30 ${typeof currentCity !== 'string' &&
+                                  currentCity.name === city.name
+                                  ? 'gradient-bg'
+                                  : 'border border-gray btn relative  overflow-hidden  transition-all  rounded  group py-1.5 px-2.5'
+                                  }`}
+                                outline={true}
+                              >
+                                {currentCity.name !== city.name && (
+                                  <>
+                                    <span className="transparent-bg "></span>
+                                    <span className="relative w-full  rounded transition-colors duration-300 ease-in-out group-hover:text-white">
+                                      {city.name}
+                                    </span>
+                                  </>
+                                )}
+                                {typeof currentCity !== 'string' &&
+                                  currentCity.name === city.name && (
+                                    <span className="relative w-full  rounded transition-colors duration-300 ease-in-out group-hover:text-white">
+                                      {city.name}
+                                    </span>
+                                  )}
+                              </Button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-16 pb-44 lg:pb-20">
+                  {speakersList.length > 0 ? (
+                    <div className="w-full grid grid-cols-3 lg:grid-cols-2 sm:grid-cols-1 gap-4">
+                      {speakersList.map((speaker) => {
+                        return (
+                          <SpeakerCard
+                            key={speaker.id}
+                            name={speaker.name}
+                            title={speaker.title}
+                            company={speaker.company}
+                            image={speaker.img}
+                            location={
+                              currentCity.name !== 'All'
+                                ? `${currentCity.name}, ${currentCity.country}`
+                                : speaker.city[1]
+                                  ? `${speaker.city[0]} & ${speaker.city[1]}`
+                                  : `${speaker.city[0]}`
+                            }
+                            className="mt-10"
+                          />
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="mt-16 pb-44 flex items-center justify-center text-center">
+                      <div className="w-content-sm lg:w-full">
+                        {typeof currentCity !== 'string' && currentCfpUrl ? (
+                          <div>
+                            <Paragraph className="text-gray-200">
+                              We are actively accepting speaker applications, and
+                              you can start your journey by clicking the button
+                              below. Join us on stage and share your valuable
+                              insights with our enthusiastic audience!
+                            </Paragraph>
+                            <Link
+                              className="flex justify-center"
+                              href={currentCfpUrl}
+                              target={
+                                isExternalUrl(currentCfpUrl)
+                                  ? '_blank'
+                                  : undefined
+                              }
+                              rel={
+                                isExternalUrl(currentCfpUrl)
+                                  ? 'noreferrer'
+                                  : undefined
+                              }
+                            >
+                              <Button
+                                type="button"
+                                className="mt-20 w-60 border border-gray"
+                                text="Apply as a speaker"
+                              />
+                            </Link>
+                          </div>
+                        ) : (
+                          <div>
+                            <Heading
+                              typeStyle="heading-md-semibold"
+                              className="text-gray-200"
+                            >
+                              {typeof currentCity !== 'string' &&
+                                currentCity.name}{' '}
+                              Speakers Coming Soon - Stay Tuned!
+                            </Heading>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {galleryCloudName && galleryAlbums.length > 0 && (
+          <div
+            id="gallery"
+            data-test="gallery-teaser"
+            className="container flex flex-col items-center justify-center pb-20"
+          >
+            <div className="text-lg sm:text-sm text-white font-semibold border-b-2 border-blue-400 mb-1">
+              Gallery
+            </div>
+            <Heading
+              typeStyle="heading-md"
+              className="text-gradient text-center lg:mt-10"
+            >
+              Moments from AsyncAPI Conf
+            </Heading>
+            <div className="max-w-3xl sm:w-full text-center">
+              <Paragraph
+                typeStyle="body-lg"
+                className="mt-6"
+                textColor="text-gray-200"
+              >
+                A look back at the talks, workshops and people from our recent
+                conferences.
+              </Paragraph>
+            </div>
+            <div className="mt-16 w-content-lg lg:w-full">
+              <Gallery
+                cloudName={galleryCloudName}
+                albums={galleryAlbums}
+                limit={galleryLimit}
+              />
+            </div>
+            <Link
+              href="/gallery"
+              data-test="gallery-teaser-see-all"
+              className="gradient-bg mt-12 flex h-14 items-center justify-center rounded-md px-8 text-white"
+            >
+              See all photos
+            </Link>
+          </div>
+        )}
+
+        <div
+          id="tickets"
+          className="flex items-center flex-col justify-center pt-20 pb-10 lg:pt-0 w-full overflow-x-clip"
+        >
+          <div className="text-lg sm:text-sm text-white font-semibold border-b-2 border-blue-400 mb-1">
+            Tickets
+          </div>
+
+          <div
+            data-test="ticket-section"
+            className="flex flex-col items-center px-4 w-full"
+          >
+            <Heading
+              typeStyle="heading-md"
+              className="text-gradient text-center lg:mt-10"
+            >
+              Get Tickets
+            </Heading>
+            <div className="max-w-3xl w-full text-center">
+              <Paragraph
+                typeStyle="body-lg"
+                className="mt-6"
+                textColor="text-gray-200"
+              >
+                Experience the Future of Asynchronous Communication: Get Tickets for
+                the AsyncAPI Conference!
+              </Paragraph>
+            </div>
+          </div>
+
+          <div className="w-full mt-12">
+            <Ticket />
+          </div>
+        </div>
+      </>
+      <div id="sponsors" className="mt-20">
+        <Sponsors
+          eventSponsors={[
+            {
+              image: '/img/logos/developerweek-logo.webp',
+              websiteUrl: 'https://www.developerweek.com/',
+            },
+            {
+              image: '/img/logos/apidays.png',
+              websiteUrl: 'https://www.apidays.global/',
+            },
+          ]}
+        />
+      </div>
+      <div className="mt-5">
+        <Subscription />
+      </div>
+    </div>
+  );
+}

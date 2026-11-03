@@ -1,0 +1,45 @@
+import React, { JSX } from 'react';
+import Image from 'next/image';
+import ILink from '../../illustration/link';
+import { BLUR_DATA_URL } from '../../../utils/image-blur';
+
+interface PastEditonCardProp {
+  url: string;
+}
+
+const PastEditonCard = ({ url }: PastEditonCardProp): JSX.Element => {
+  const year = url.split('.')[1];
+  return (
+    <div className="bg-white bg-opacity-10 backdrop-blur-lg bg-clip-padding shadow-lg p-4 w-full mx-auto border-2 border-white/40 rounded-xl transition-all hover:scale-105">
+      <div className="flex items-center flex-wrap justify-between">
+        <h1 className="text-2xl text-white font-semibold">{year}</h1>
+        <div className='transition'>
+          <a
+            href={url}
+            rel="noreferrer"
+            target="_blank"
+            className="flex hover:scale-95 transition items-center justify-center"
+          >
+            <p className="mr-2 text-white text-sm">View Website</p>
+            <ILink className="w-5" fill="white" />
+          </a>
+        </div>
+      </div>
+
+      <div className="relative w-full h-64 my-4 rounded-lg overflow-hidden">
+        <Image
+          src={`/img/past-editions/${year}.webp`}
+          alt={`AsyncAPI Conference ${year}`}
+          fill
+          loading="lazy"
+          placeholder="blur"
+          blurDataURL={BLUR_DATA_URL}
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 50vw"
+        />
+      </div>
+    </div>
+  );
+};
+
+export default PastEditonCard;
